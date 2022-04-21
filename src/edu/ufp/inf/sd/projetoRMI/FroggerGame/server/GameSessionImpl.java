@@ -24,4 +24,8 @@ public class GameSessionImpl extends UnicastRemoteObject implements GameSessionR
     public void logout() throws RemoteException{
         this.gameFactory.userSession.remove(this);
     }
+
+    public void insertGame(String title, String dificuldade) throws RemoteException{
+        this.gameFactory.getDb().insert(title, dificuldade);
+    }
 }

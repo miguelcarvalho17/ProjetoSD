@@ -5,31 +5,34 @@ import java.io.Serializable;
 public class Game implements Serializable{
 
         private int numPlayers;
-        private Boolean running;
+        private String name;
         private String dificuldade;
 
-        public Game(Boolean state, String dif) {
-            running = state;
+        public Game(String title, String dif) {
+            name = title;
             dificuldade = dif;
+            numPlayers = 1;
         }
 
-        @Override
-        public String toString() {
-            return "Game{" + "Dificuldade=" + getDificuldade() + ", Running=" + getState() + ",NumPlayers= " + getNumPlayers()+ '}';
+        public void printInfo() {
+            System.out.println("Game: " + this.getName());
+            System.out.println("Dificuldade: " + this.getDificuldade());
+            System.out.println("NumPlayers: " + this.getNumPlayers());
+            System.out.println("------------------------------------------------------------------------------");
         }
 
         /**
          * @return the running status
          */
-        public Boolean getState() {
-            return running;
+        public String getName() {
+            return name;
         }
 
         /**
-         * @param state of Game, is Running? Yes or No
+         * @param title of Game
          */
-        public void setState(Boolean state) {
-            this.running = state;
+        public void setName(String title) {
+            this.name = title;
         }
 
         /**

@@ -146,21 +146,49 @@ public class FroggerClient {
         System.out.println("Choose an option");
         System.out.println("1 - Join a game");
         System.out.println("2 - Create a new game");
+        System.out.println("3 - Logout");
         int option= sc2.nextInt();
 
         switch (option){
             case 1:
-                Game[] games;
-                games = gameSessionRI.getAll();
-                for (Game g: games) {
-                    System.out.println(g.toString());
-                }
+                listGame(gameSessionRI);
                 break;
             case 2:
+                createGame(gameSessionRI);
+                break;
+            case 3:
+                gameSessionRI.logout();
                 break;
             default:
                 System.out.println("Invalid option");
         }
+    }
+
+    public void createGame(GameSessionRI gameSessionRI) throws RemoteException {
+        Scanner scanName= new Scanner(System.in); //System.in is a standard input stream
+        System.out.println("Enter Title of Game: ");
+        String title = scanName.nextLine();              //reads string
+
+        Scanner scanDificuldade = new Scanner(System.in); //System.in is a standard input stream
+        System.out.println("Enter difficulty: ");
+        String dificuldade = scanDificuldade.nextLine();              //reads string
+
+        gameSessionRI.insertGame(title, dificuldade);
+    }
+
+    public void listGame(GameSessionRI gameSessionRI) throws RemoteException {
+        Game[] games;
+        games = gameSessionRI.getAll();
+        System.out.println("List Games:");
+        for (int i = 0; i < games.length; i++) {
+            System.out.print(i+1 + ". ");
+            games[i].printInfo();
+        }
+
+        Scanner scanOption= new Scanner(System.in); //System.in is a standard input stream
+        System.out.println("Choose one Game to join: ");
+        int option = scanOption.nextInt();              //reads integer
+
     }
 }
 

@@ -24,7 +24,7 @@ public class DB {
 
         //Add one user
         users.add(new User("guest@ufp.edu.pt", "ufp"));
-        froggerGames.add(new Game(true, "easy"));
+        froggerGames.add(new Game("Easy Mode", "easy"));
     }
 
     /**
@@ -56,13 +56,13 @@ public class DB {
     }
 
     /**
-     * Inserts a new book into the DigLib.
+     * Inserts a new game into the DB.
      *
-     * @param state running
+     * @param title titulo
      * @param dif dificuldade
      */
-    public void insert(Boolean state, String dif) {
-        froggerGames.add(new Game(state, dif));
+    public void insert(String title, String dif) {
+        froggerGames.add(new Game(title, dif));
     }
 
     public Game[] getAll() {
