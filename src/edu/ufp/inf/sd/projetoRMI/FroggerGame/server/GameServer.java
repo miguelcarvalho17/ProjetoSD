@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
@@ -35,6 +36,8 @@ public class GameServer {
      * Remote interface that will hold reference MAIL_TO_ADDR the Servant impl
      */
     private GameFactoryRI gameFactoryRI;
+
+    private static ArrayList<SubjectImpl> gameServers = new ArrayList<>();
 
     public static void main(String[] args) {
         if (args != null && args.length < 3) {
@@ -113,6 +116,10 @@ public class GameServer {
         FileOutputStream out = new FileOutputStream("defaultproperties2.txt");
         props.store(out, "---No Comment---");
         out.close();
+    }
+
+    public static void addGameServer(SubjectImpl s){
+        gameServers.add(s);
     }
 }
 

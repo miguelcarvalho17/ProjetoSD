@@ -4,14 +4,13 @@ import java.io.Serializable;
 
 public class Game implements Serializable{
 
-        private int numPlayers;
+        private int numPlayers = 0;
         private String name;
         private String dificuldade;
 
         public Game(String title, String dif) {
             name = title;
             dificuldade = dif;
-            numPlayers = 1;
         }
 
         public void printInfo() {

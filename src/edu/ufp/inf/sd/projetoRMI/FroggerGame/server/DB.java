@@ -65,6 +65,15 @@ public class DB {
         froggerGames.add(new Game(title, dif));
     }
 
+    public boolean existsGame(String title) {
+        for (Game g : this.froggerGames) {
+            if (g.getName().compareTo(title) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Game[] getAll() {
         Game[] games = new Game[froggerGames.size()];
         for (int i = 0; i < froggerGames.size(); i++) {

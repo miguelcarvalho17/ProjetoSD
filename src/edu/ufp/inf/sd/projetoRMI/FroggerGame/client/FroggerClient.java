@@ -2,12 +2,14 @@ package edu.ufp.inf.sd.projetoRMI.FroggerGame.client;
 
 import edu.ufp.inf.sd.projetoRMI.FroggerGame.server.Game;
 import edu.ufp.inf.sd.projetoRMI.FroggerGame.server.GameFactoryRI;
+import edu.ufp.inf.sd.projetoRMI.FroggerGame.server.GameServer;
 import edu.ufp.inf.sd.projetoRMI.FroggerGame.server.GameSessionRI;
 import edu.ufp.inf.sd.rmi.util.rmisetup.SetupContextRMI;
 import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.registry.Registry;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -170,10 +172,26 @@ public class FroggerClient {
         String title = scanName.nextLine();              //reads string
 
         Scanner scanDificuldade = new Scanner(System.in); //System.in is a standard input stream
-        System.out.println("Enter difficulty: ");
+        System.out.println("Enter difficulty(Easy, Medium, Hard): ");
         String dificuldade = scanDificuldade.nextLine();              //reads string
+        String lower = dificuldade.toLowerCase();
+        int level;
+        switch (lower){
+            case "easy":
+                level = 1;
+                break;
+            case "medium":
+                level = 2;
+                break;
+            case "hard":
+                level = 3;
+                break;
+            default:
+                System.out.println("Invalid option");
+        }
 
         gameSessionRI.insertGame(title, dificuldade);
+
     }
 
     public void listGame(GameSessionRI gameSessionRI) throws RemoteException {
@@ -189,6 +207,16 @@ public class FroggerClient {
         System.out.println("Choose one Game to join: ");
         int option = scanOption.nextInt();              //reads integer
 
+
     }
 }
+
+// Criar um obvserver antes entrar no jogo, instanciar o jogo tambem (GUI jogo)
+//  Attach para se juntar ao jogo
+// Criar varios sapos, ver imagem jpg, criar novas imagens com outras cores
+
+// Codigo do handler colocar noutra funçao
+
+// Ir ao ao setState e atualizar
+
 
