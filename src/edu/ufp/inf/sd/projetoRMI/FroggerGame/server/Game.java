@@ -7,10 +7,12 @@ public class Game implements Serializable{
         private int numPlayers = 0;
         private String name;
         private String dificuldade;
+        private SubjectRI subjectRI;
 
-        public Game(String title, String dif) {
-            name = title;
-            dificuldade = dif;
+        public Game(String title, String dif, SubjectRI subject) {
+            this.name = title;
+            this.dificuldade = dif;
+            this.subjectRI = subject;
         }
 
         public void printInfo() {

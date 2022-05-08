@@ -13,9 +13,8 @@ public class ObserverImpl extends UnicastRemoteObject implements ObserverRI {
     protected SubjectRI subjectRI;
     protected Main gameWindow;
 
-    protected ObserverImpl(String id, Main gameWindow, SubjectRI subjectRI) throws RemoteException {
+    protected ObserverImpl(String id, SubjectRI subjectRI) throws RemoteException {
         this.id = id;
-        this.gameWindow = gameWindow;
         this.subjectRI = subjectRI;
         this.subjectRI.attach(this);
     }
@@ -24,11 +23,23 @@ public class ObserverImpl extends UnicastRemoteObject implements ObserverRI {
     @Override
     public void update() throws RemoteException{
         this.lastObserverState = subjectRI.getState();
-        gameWindow.froggerKeyboardHandler();
+        gameWindow.froggerHandler(this.lastObserverState);
     }
 
     public State getLastObserverState(){
         return lastObserverState;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public SubjectRI getSubjectRI() {
+        return subjectRI;
+    }
+
+    public void setGameWindow(Main gameWindow) {
+        this.gameWindow = gameWindow;
     }
 }
 

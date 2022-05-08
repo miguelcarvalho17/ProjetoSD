@@ -1,14 +1,12 @@
 package edu.ufp.inf.sd.projetoRMI.FroggerGame.client;
 
-import edu.ufp.inf.sd.projetoRMI.FroggerGame.server.Game;
-import edu.ufp.inf.sd.projetoRMI.FroggerGame.server.GameFactoryRI;
-import edu.ufp.inf.sd.projetoRMI.FroggerGame.server.GameServer;
-import edu.ufp.inf.sd.projetoRMI.FroggerGame.server.GameSessionRI;
+import edu.ufp.inf.sd.projetoRMI.FroggerGame.server.*;
 import edu.ufp.inf.sd.rmi.util.rmisetup.SetupContextRMI;
 import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -38,13 +36,15 @@ public class FroggerClient {
      */
     private GameFactoryRI GameFactoryRI;
 
+    private String username;
+
     public static void main(String[] args) {
         if (args != null && args.length < 2) {
-            System.err.println("usage: java [options] edu.ufp.sd.inf.ProjetoSD.FroggerGame.server <rmi_registry_ip> <rmi_registry_port> <service_name>");
+            System.err.println("usage: java [options] edu.ufp.sd.inf.rmi._01_helloworld.server.HelloWorldClient <rmi_registry_ip> <rmi_registry_port> <service_name>");
             System.exit(-1);
         } else {
             //1. ============ Setup client RMI context ============
-            FroggerClient hwc=new FroggerClient(args);
+            FroggerClient hwc = new FroggerClient(args);
             //2. ============ Lookup service ============
             hwc.lookupService();
             //3. ============ Play with service ============
@@ -122,6 +122,7 @@ public class FroggerClient {
                     System.out.println("Invalid email or password");
                     menuHome();
                 }else{
+                    username = email;
                     menuGame(gameSessionRI);
                 }
                 //gameSessionRI.logout();
@@ -174,8 +175,51 @@ public class FroggerClient {
         Scanner scanDificuldade = new Scanner(System.in); //System.in is a standard input stream
         System.out.println("Enter difficulty(Easy, Medium, Hard): ");
         String dificuldade = scanDificuldade.nextLine();              //reads string
+        // criar subject aqui
+        gameSessionRI.insertGame(title, dificuldade);
+        SubjectRI subject = gameSessionRI.getSubject(title);
+
         String lower = dificuldade.toLowerCase();
-        int level;
+        int level = 0;
+        switch (lower){
+            case "easy":
+                level = 1;
+                break;
+            case "medium":
+                level = 2;
+                break;
+            case "hard":
+                level = 3;
+                break;
+            default:
+                System.out.println("Invalid option");
+        }
+        ObserverRI obs = new ObserverImpl(username, subject);
+        Main f = new Main(level,title, obs);
+        obs.setGameWindow(f);
+        f.run();
+    }
+
+    public void listGame(GameSessionRI gameSessionRI) throws RemoteException {
+        ArrayList<Game> games;
+        games = gameSessionRI.getGames();
+        System.out.println("List Games:");
+        for (int i = 0; i < games.size(); i++) {
+            System.out.print(i+1 + ". ");
+            games.get(i).printInfo();
+        }
+
+        Scanner scanOption= new Scanner(System.in); //System.in is a standard input stream
+        System.out.println("Choose one Game to join: ");
+        int option = scanOption.nextInt();              //reads integer
+        Game g = games.get(option - 1);
+        String title = g.getName();
+
+        SubjectRI s = gameSessionRI.getSubject(title);
+
+        String lower = g.getDificuldade()
+                .toLowerCase();
+        int level = 0;
         switch (lower){
             case "easy":
                 level = 1;
@@ -190,29 +234,15 @@ public class FroggerClient {
                 System.out.println("Invalid option");
         }
 
-        gameSessionRI.insertGame(title, dificuldade);
-
-    }
-
-    public void listGame(GameSessionRI gameSessionRI) throws RemoteException {
-        Game[] games;
-        games = gameSessionRI.getAll();
-        System.out.println("List Games:");
-        for (int i = 0; i < games.length; i++) {
-            System.out.print(i+1 + ". ");
-            games[i].printInfo();
-        }
-
-        Scanner scanOption= new Scanner(System.in); //System.in is a standard input stream
-        System.out.println("Choose one Game to join: ");
-        int option = scanOption.nextInt();              //reads integer
-
-
+        ObserverRI observer = new ObserverImpl(username, s);
+        Main f = new Main(level,title, observer);
+        observer.setGameWindow(f);
+        f.run();
     }
 }
 
 // Criar um obvserver antes entrar no jogo, instanciar o jogo tambem (GUI jogo)
-//  Attach para se juntar ao jogo
+// Attach para se juntar ao jogo
 // Criar varios sapos, ver imagem jpg, criar novas imagens com outras cores
 
 // Codigo do handler colocar noutra funçao

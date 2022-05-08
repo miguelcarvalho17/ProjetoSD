@@ -29,4 +29,5 @@ public class ObserverImpl extends UnicastRemoteObject implements ObserverRI {
     public State getLastObserverState(){
         return lastObserverState;
     }
+
 }

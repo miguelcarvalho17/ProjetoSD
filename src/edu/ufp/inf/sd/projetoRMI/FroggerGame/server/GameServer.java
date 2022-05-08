@@ -37,8 +37,6 @@ public class GameServer {
      */
     private GameFactoryRI gameFactoryRI;
 
-    private static ArrayList<SubjectImpl> gameServers = new ArrayList<>();
-
     public static void main(String[] args) {
         if (args != null && args.length < 3) {
             System.err.println("usage: java [options] edu.ufp.sd._04_diglib.server.DigLibServer <rmi_registry_ip> <rmi_registry_port> <service_name>");
@@ -116,10 +114,6 @@ public class GameServer {
         FileOutputStream out = new FileOutputStream("defaultproperties2.txt");
         props.store(out, "---No Comment---");
         out.close();
-    }
-
-    public static void addGameServer(SubjectImpl s){
-        gameServers.add(s);
     }
 }
 

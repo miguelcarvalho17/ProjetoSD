@@ -7,10 +7,12 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
 public class SubjectImpl extends UnicastRemoteObject implements SubjectRI {
+    private String name;
     private State subjectState;
     private ArrayList<ObserverRI> observers = new ArrayList<>();
 
-    public SubjectImpl() throws RemoteException {
+    public SubjectImpl(String title) throws RemoteException {
+        this.name = title;
         this.subjectState = new State("", "");
         this.observers = new ArrayList<ObserverRI>();
     }
@@ -36,10 +38,18 @@ public class SubjectImpl extends UnicastRemoteObject implements SubjectRI {
         notifyAllObservers();
     }
 
+    public int getObservers()  throws RemoteException{
+        return observers.size();
+    }
+
     public void notifyAllObservers() throws RemoteException {
         for (int i = 0; i < observers.size(); i++){
             ObserverRI obsRI = observers.get(i);
             obsRI.update();
         }
+    }
+
+    public String getName() {
+        return name;
     }
 }

@@ -1,7 +1,9 @@
 package edu.ufp.inf.sd.projetoRMI.FroggerGame.server;
 
+import edu.ufp.inf.sd.projetoRMI.FroggerGame.client.Main;
 import edu.ufp.inf.sd.rmi._04_diglib.server.Book;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**
@@ -14,17 +16,22 @@ public class DB {
 
     private final ArrayList<Game> froggerGames;
     private final ArrayList<User> users;// = new ArrayList();
+    private final ArrayList<SubjectRI> subjectsRI;
 
     /**
      * This constructor creates and inits the database with some books and users.
      */
-    public DB() {
+    public DB() throws RemoteException {
         froggerGames = new ArrayList();
         users = new ArrayList();
+        subjectsRI = new ArrayList<>();
 
         //Add one user
-        users.add(new User("guest@ufp.edu.pt", "ufp"));
-        froggerGames.add(new Game("Easy Mode", "easy"));
+        users.add(new User("guest", "ufp"));
+        String title = "Easy mode", dif  = "easy";
+        SubjectRI s = new SubjectImpl(title);
+        froggerGames.add(new Game(title, dif, s));
+        subjectsRI.add(s);
     }
 
     /**
@@ -61,8 +68,10 @@ public class DB {
      * @param title titulo
      * @param dif dificuldade
      */
-    public void insert(String title, String dif) {
-        froggerGames.add(new Game(title, dif));
+    public void insert(String title, String dif) throws RemoteException {
+        SubjectRI subject = new SubjectImpl(title);
+        froggerGames.add(new Game(title, dif, subject));
+        subjectsRI.add(subject);
     }
 
     public boolean existsGame(String title) {
@@ -74,11 +83,25 @@ public class DB {
         return false;
     }
 
-    public Game[] getAll() {
-        Game[] games = new Game[froggerGames.size()];
-        for (int i = 0; i < froggerGames.size(); i++) {
-            games[i] = froggerGames.get(i);
+    public SubjectRI getSubjectByName(String n) throws RemoteException {
+        for (SubjectRI s :this.getSubjectsRI() ) {
+            if(s.getName().compareTo(n) == 0){
+                return s;
+            }
         }
-        return games;
+        System.out.println("Nada");
+        return null;
+    }
+
+    public ArrayList<Game> getFroggerGames() {
+        return froggerGames;
+    }
+
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+
+    public ArrayList<SubjectRI> getSubjectsRI() {
+        return subjectsRI;
     }
 }

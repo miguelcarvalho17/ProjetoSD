@@ -82,7 +82,8 @@ public class PongImpl implements PongRI{
     }
 
     @Override
-    public void pong(Ball bola) {
-
+    public void pong(Ball bola)  throws RemoteException{
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "pong(): ball "+bola.getPlayerID());
+        pingRI.ping(bola, this);
     }
 }

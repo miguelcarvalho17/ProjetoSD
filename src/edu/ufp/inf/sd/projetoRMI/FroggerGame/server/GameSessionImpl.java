@@ -10,7 +10,6 @@ import java.util.ArrayList;
 public class GameSessionImpl extends UnicastRemoteObject implements GameSessionRI {
 
     GameFactoryImpl gameFactory;
-    //private ArrayList<SubjectRI> gameServers;
 
     protected GameSessionImpl(GameFactoryImpl gameFactory) throws RemoteException {
         super();
@@ -19,8 +18,8 @@ public class GameSessionImpl extends UnicastRemoteObject implements GameSessionR
     }
 
     @Override
-    public Game[] getAll() throws RemoteException {
-        return this.gameFactory.getDb().getAll();
+    public ArrayList<Game> getGames() throws RemoteException {
+        return this.gameFactory.getDb().getFroggerGames();
     }
 
     @Override
@@ -31,18 +30,10 @@ public class GameSessionImpl extends UnicastRemoteObject implements GameSessionR
     public void insertGame(String title, String dificuldade) throws RemoteException{
         if (!this.gameFactory.getDb().existsGame(title)){
             this.gameFactory.getDb().insert(title, dificuldade);
-            SubjectImpl game = new SubjectImpl();
-
-            Main f = new Main();
-            f.run();
         }
     }
 
-    //gameServers.add(game);
-/*
-    public boolean assocPlayer(String title) throws RemoteException{
-        int numPlayers = this.gameFactory.getDb().
+    public SubjectRI getSubject(String t) throws RemoteException{
+        return this.gameFactory.getDb().getSubjectByName(t);
     }
-
- */
 }
