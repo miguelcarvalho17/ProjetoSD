@@ -49,8 +49,9 @@ public class Frogger extends MovingEntity {
 	
 	// Object to follow, such as Tree Log in the river
 	private MovingEntity followObject = null;
-	
-	
+
+	private Vector2D FROGGER_START;
+
 	public boolean isAlive = false;
     private long timeOfDeath = 0;
     
@@ -65,13 +66,20 @@ public class Frogger extends MovingEntity {
     public boolean hw_hasMoved = false;
     
     private Main game;
+
+    private int name;
+
+    private int Frogger_Lives;
     
     /**
      * Build frogger!
      */
-	public Frogger (Main g, String frog) {
+	public Frogger (Main g, String frog, Vector2D FROGGER_START, int name) {
 		super(Main.SPRITE_SHEET + frog);
 		game = g;
+		this.FROGGER_START = FROGGER_START;
+		this.name = name;
+		this.Frogger_Lives = g.GameLives;
 		resetFrog();
 		collisionObjects.add(new CollisionObject(position));
 	}
@@ -84,7 +92,7 @@ public class Frogger extends MovingEntity {
 		isAnimating = false;
 		currentFrame = 0;
 		followObject = null;
-		position = Main.FROGGER_START;
+		position = this.FROGGER_START;
 		game.levelTimer = Main.DEFAULT_LEVEL_TIME;
 	}
 	
@@ -264,7 +272,7 @@ public class Frogger extends MovingEntity {
 		    followObject = null;
 		    isAlive = false;
 		    currentFrame = 4;	// dead sprite   
-		    game.GameLives--;
+		    this.Frogger_Lives--;
 		    hw_hasMoved = true;
 		}
 		
@@ -282,7 +290,7 @@ public class Frogger extends MovingEntity {
 			game.GameScore += game.levelTimer;
 			if (g.isBonus) {
 				AudioEfx.bonus.play(0.2);
-				game.GameLives++;
+				this.Frogger_Lives++;
 			}
 			g.reached();
 			resetFrog();
@@ -293,7 +301,7 @@ public class Frogger extends MovingEntity {
 	}
 	
 	public void update(final long deltaMs) {
-		if (game.GameLives <= 0)
+		if (this.Frogger_Lives <= 0)
 			return;
 		
 		// if dead, stay dead for 2 seconds.
@@ -313,5 +321,13 @@ public class Frogger extends MovingEntity {
 		
 		if (game.levelTimer <= 0)
 			die();
+	}
+
+	public int getFrogger_Lives() {
+		return Frogger_Lives;
+	}
+
+	public void setFrogger_Lives(int frogger_Lives) {
+		Frogger_Lives = frogger_Lives;
 	}
 }

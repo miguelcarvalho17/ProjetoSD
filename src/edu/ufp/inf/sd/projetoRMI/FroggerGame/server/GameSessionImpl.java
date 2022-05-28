@@ -27,10 +27,22 @@ public class GameSessionImpl extends UnicastRemoteObject implements GameSessionR
         this.gameFactory.userSession.remove(this);
     }
 
-    public void insertGame(String title, String dificuldade) throws RemoteException{
+    public Game insertGame(String title, String dificuldade) throws RemoteException{
         if (!this.gameFactory.getDb().existsGame(title)){
-            this.gameFactory.getDb().insert(title, dificuldade);
+            Game g = this.gameFactory.getDb().insert(title, dificuldade);
+            return g;
         }
+        return null;
+    }
+
+    public Game joinGame(String t) throws RemoteException{
+        for (Game g : this.gameFactory.getDb().getFroggerGames()){
+            if (g.getName().compareTo(t) == 0){
+                g.setNumPlayers();
+                return g;
+            }
+        }
+        return null;
     }
 
     public SubjectRI getSubject(String t) throws RemoteException{

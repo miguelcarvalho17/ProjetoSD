@@ -1,4 +1,4 @@
-package edu.ufp.inf.sd.projetoRMI.util.rmisetup;
+package edu.ufp.inf.sd.projetoRabbitMQ.util.rmisetup;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

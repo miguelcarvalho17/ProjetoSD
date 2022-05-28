@@ -12,5 +12,6 @@ public interface SubjectRI  extends Remote {
     State getState() throws RemoteException;
     int getObservers() throws RemoteException;
     void setState(State state) throws RemoteException;
+    public int findObserverPosition(ObserverRI obs) throws RemoteException;
     public String getName() throws RemoteException;
 }

@@ -30,7 +30,8 @@ public class DB {
         users.add(new User("guest", "ufp"));
         String title = "Easy mode", dif  = "easy";
         SubjectRI s = new SubjectImpl(title);
-        froggerGames.add(new Game(title, dif, s));
+        Game g = new Game(title, dif, s);
+        froggerGames.add(g);
         subjectsRI.add(s);
     }
 
@@ -68,10 +69,14 @@ public class DB {
      * @param title titulo
      * @param dif dificuldade
      */
-    public void insert(String title, String dif) throws RemoteException {
+    public Game insert(String title, String dif) throws RemoteException {
         SubjectRI subject = new SubjectImpl(title);
-        froggerGames.add(new Game(title, dif, subject));
+        Game g = new Game(title, dif, subject);
+        g.setNumPlayers();
+        froggerGames.add(g);
         subjectsRI.add(subject);
+
+        return g;
     }
 
     public boolean existsGame(String title) {

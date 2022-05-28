@@ -101,8 +101,6 @@ public class Main extends StaticScreenGame {
 
 	int dificuldade;
 
-	String name;
-
 	/**
 	 * Context for connecting a RMI client to a RMI Servant
 	 */
@@ -110,16 +108,18 @@ public class Main extends StaticScreenGame {
 
 	private ObserverRI observerRI;
 
+	private int name;
+
     /**
 	 * Initialize game objects
 	 */
-	public Main (int difficulty, String titulo, ObserverRI obs) throws RemoteException {
+	public Main (int difficulty, String titulo, ObserverRI obs, int name) throws RemoteException {
 		
 		super(WORLD_WIDTH, WORLD_HEIGHT, false);
 		
-		gameframe.setTitle(titulo + ", " + obs.getId());
-		name = obs.getId();
+		gameframe.setTitle(titulo + ", " + name);
 		this.observerRI = obs;
+		this.name = name;
 		
 		ResourceFactory.getFactory().loadResources(RSC_PATH, "resources.xml");
 
@@ -134,8 +134,8 @@ public class Main extends StaticScreenGame {
 		PaintableCanvas.loadDefaultFrames("col", 30, 30, 2, JIGSHAPE.RECTANGLE, null);
 		PaintableCanvas.loadDefaultFrames("colSmall", 4, 4, 2, JIGSHAPE.RECTANGLE, null);
 			
-		frog = new Frogger(this, "#frog");
-		frog2 = new Frogger(this, "#frog2");
+		frog = new Frogger(this, "#frog", FROGGER_START, 0);
+		frog2 = new Frogger(this, "#frog2", FROGGER2_START, 1);
 		frogCol = new FroggerCollisionDetection(frog);
 		frogCol2 = new FroggerCollisionDetection(frog2);
 		audiofx = new AudioEfx(frogCol,frog);
@@ -213,19 +213,19 @@ public class Main extends StaticScreenGame {
 		MovingEntity m;
 		/* Road traffic updates */
 		roadLine1.update(deltaMs);
-	    if ((m = roadLine1.buildVehicle()) != null) movingObjectsLayer.add(m);
+	    if ((m = roadLine1.buildVehicle(40)) != null) movingObjectsLayer.add(m);
 		
 		roadLine2.update(deltaMs);
-	    if ((m = roadLine2.buildVehicle()) != null) movingObjectsLayer.add(m);
+	    if ((m = roadLine2.buildVehicle(30)) != null) movingObjectsLayer.add(m);
 	    
 		roadLine3.update(deltaMs);
-	    if ((m = roadLine3.buildVehicle()) != null) movingObjectsLayer.add(m);
+	    if ((m = roadLine3.buildVehicle(50)) != null) movingObjectsLayer.add(m);
 	    
 		roadLine4.update(deltaMs);
-	    if ((m = roadLine4.buildVehicle()) != null) movingObjectsLayer.add(m);
+	    if ((m = roadLine4.buildVehicle(20)) != null) movingObjectsLayer.add(m);
 
 		roadLine5.update(deltaMs);
-	    if ((m = roadLine5.buildVehicle()) != null) movingObjectsLayer.add(m);
+	    if ((m = roadLine5.buildVehicle(10)) != null) movingObjectsLayer.add(m);
 	    
 		
 		/* River traffic updates */
@@ -290,23 +290,23 @@ public class Main extends StaticScreenGame {
 		if (listenInput) {
 			State s;
 		    if (downPressed) {
-				s = new State(name, "DownPressed");
+				s = new State(name+"", "DownPressed");
 				this.observerRI.getSubjectRI().setState(s);
 				//frog.moveDown();
 			}
 
 		    if (upPressed){
-				s = new State(name, "UpPressed");
+				s = new State(name+"", "UpPressed");
 				this.observerRI.getSubjectRI().setState(s);
 		    	//frog.moveUp();
 			}
 		    if (leftPressed){
-				s = new State(name, "LeftPressed");
+				s = new State(name+"", "LeftPressed");
 				this.observerRI.getSubjectRI().setState(s);
 		    	//frog.moveLeft();
 			}
 	 	    if (rightPressed){
-				s = new State(name, "RightPressed");
+				s = new State(name+"", "RightPressed");
 				this.observerRI.getSubjectRI().setState(s);
 	 	    	//frog.moveRight();
 			}
@@ -328,37 +328,39 @@ public class Main extends StaticScreenGame {
 		String frogToMove = s.getId();
 		String move = s.getInfo();
 
-		switch (move){
+		switch (move) {
 			case "UpPressed":
-				if (frogToMove.compareTo("guest") == 0){
+				if (frogToMove.compareTo("0") == 0) {
 					frog.moveUp();
-					break;
+				} else if (frogToMove.compareTo("1") == 0){
+					frog2.moveUp();
 				}
-				frog2.moveUp();
 				break;
 			case "DownPressed":
-				if (s.getId().compareTo("guest") == 0){
+				if (frogToMove.compareTo("0") == 0){
 					frog.moveDown();
-					break;
 				}
-				frog2.moveDown();
+				else if (frogToMove.compareTo("1") == 0){
+					frog2.moveDown();
+				}
 				break;
 			case "LeftPressed":
-				if (s.getId().compareTo("guest") == 0){
+				if (frogToMove.compareTo("0") == 0){
 					frog.moveLeft();
-					break;
 				}
-				frog2.moveLeft();
+				else if (frogToMove.compareTo("1") == 0){
+					frog2.moveLeft();
+				}
 				break;
 			case "RightPressed":
-				if (s.getId().compareTo("guest") == 0){
+				if (frogToMove.compareTo("0") == 0){
 					frog.moveRight();
-					break;
 				}
-				frog2.moveRight();
+				else if (frogToMove.compareTo("1") == 0){
+					frog2.moveRight();
+				}
 				break;
 		}
-
 	}
 	
 	/**
@@ -375,7 +377,7 @@ public class Main extends StaticScreenGame {
 		if (!space_has_been_released)
 			return;
 		
-		if (keyboard.isPressed(KeyEvent.VK_SPACE)) {
+		if (keyboard.isPressed(KeyEvent.VK_SPACE) || space_has_been_released) {
 			switch (GameState) {
 			case GAME_INSTRUCTIONS:
 			case GAME_OVER:
@@ -428,36 +430,55 @@ public class Main extends StaticScreenGame {
 			frog.update(deltaMs);
 			frog2.update(deltaMs);
 			audiofx.update(deltaMs);
+			audiofx2.update(deltaMs);
 			ui.update(deltaMs);
 
 			cycleTraffic(deltaMs);
 			frogCol.testCollision(movingObjectsLayer);
+			frogCol2.testCollision(movingObjectsLayer);
 			
 			// Wind gusts work only when Frogger is on the river
 			if (frogCol.isInRiver())
 				wind.start(GameLevel);		
-			wind.perform(frog, GameLevel, deltaMs);
+				wind.perform(frog, GameLevel, deltaMs);
+				//wind.perform(frog2, GameLevel, deltaMs);
+
+			if (frogCol2.isInRiver()){
+				wind.start(GameLevel);
+				wind.perform(frog2, GameLevel, deltaMs);
+			}
 			
 			// Do the heat wave only when Frogger is on hot pavement
 			if (frogCol.isOnRoad())
 				hwave.start(frog, GameLevel);
-			hwave.perform(frog, deltaMs, GameLevel);
-			
-	
+				hwave.perform(frog, deltaMs, GameLevel);
+
+			if(frogCol2.isOnRoad())	{
+				hwave.start(frog2, GameLevel);
+				hwave.perform(frog2, deltaMs, GameLevel);
+			}
+
 			if (!frog.isAlive)
 				particleLayer.clear();
+
+			if (!frog2.isAlive){
+				particleLayer.clear();
+			}
 			
 			goalmanager.update(deltaMs);
 			
 			if (goalmanager.getUnreached().size() == 0) {
 				GameState = GAME_FINISH_LEVEL;
 				audiofx.playCompleteLevel();
+				audiofx2.playCompleteLevel();
 				particleLayer.clear();
 			}
 			
+			/*
 			if (GameLives < 1) {
 				GameState = GAME_OVER;
 			}
+			 */
 			
 			break;
 		
@@ -485,7 +506,7 @@ public class Main extends StaticScreenGame {
 		case GAME_PLAY:
 			backgroundLayer.render(rc);
 			
-			if (frog.isAlive) {
+			if (frog.isAlive || frog2.isAlive) {
 				movingObjectsLayer.render(rc);
 				//frog.collisionObjects.get(0).render(rc);
 				frog.render(rc);
@@ -497,7 +518,16 @@ public class Main extends StaticScreenGame {
 			}
 			
 			particleLayer.render(rc);
-			ui.render(rc);
+
+			try {
+				if (this.observerRI.getId().equals("0")){
+					ui.render(rc, frog.getFrogger_Lives());
+				} else if (this.observerRI.getId().equals("1")){
+					ui.render(rc, frog2.getFrogger_Lives());
+				}
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
 			break;
 			
 		case GAME_OVER:
@@ -505,7 +535,15 @@ public class Main extends StaticScreenGame {
 		case GAME_INTRO:
 			backgroundLayer.render(rc);
 			movingObjectsLayer.render(rc);
-			ui.render(rc);
+			try {
+				if (this.observerRI.getId().equals("0")){
+					ui.render(rc, frog.getFrogger_Lives());
+				} else if (this.observerRI.getId().equals("1")){
+					ui.render(rc, frog2.getFrogger_Lives());
+				}
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
 			break;		
 		}
 	}

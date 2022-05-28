@@ -6,9 +6,10 @@ import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.registry.Registry;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -125,7 +126,6 @@ public class FroggerClient {
                     username = email;
                     menuGame(gameSessionRI);
                 }
-                //gameSessionRI.logout();
                 break;
             case 2:
                 Scanner scanRegEmail= new Scanner(System.in); //System.in is a standard input stream
@@ -175,8 +175,7 @@ public class FroggerClient {
         Scanner scanDificuldade = new Scanner(System.in); //System.in is a standard input stream
         System.out.println("Enter difficulty(Easy, Medium, Hard): ");
         String dificuldade = scanDificuldade.nextLine();              //reads string
-        // criar subject aqui
-        gameSessionRI.insertGame(title, dificuldade);
+        Game g = gameSessionRI.insertGame(title, dificuldade);
         SubjectRI subject = gameSessionRI.getSubject(title);
 
         String lower = dificuldade.toLowerCase();
@@ -194,8 +193,18 @@ public class FroggerClient {
             default:
                 System.out.println("Invalid option");
         }
+
         ObserverRI obs = new ObserverImpl(username, subject);
-        Main f = new Main(level,title, obs);
+
+        while(g.getNumPlayers() < 2) {
+            State st = obs.getSubjectRI().getState();
+            if (!st.getInfo().equals("")){
+                g.setNumPlayers();
+            }
+        }
+        int frog = subject.findObserverPosition(obs);
+        System.out.println(frog);
+        Main f = new Main(level, title, obs, frog);
         obs.setGameWindow(f);
         f.run();
     }
@@ -214,9 +223,6 @@ public class FroggerClient {
         int option = scanOption.nextInt();              //reads integer
         Game g = games.get(option - 1);
         String title = g.getName();
-
-        SubjectRI s = gameSessionRI.getSubject(title);
-
         String lower = g.getDificuldade()
                 .toLowerCase();
         int level = 0;
@@ -234,9 +240,22 @@ public class FroggerClient {
                 System.out.println("Invalid option");
         }
 
+        SubjectRI s = gameSessionRI.getSubject(title);
         ObserverRI observer = new ObserverImpl(username, s);
-        Main f = new Main(level,title, observer);
+
+        State state = new State(observer.getId(), "Novo Jogador");
+        observer.getSubjectRI().setState(state);
+        while(g.getNumPlayers() < 2) {
+            State st = observer.getSubjectRI().getState();
+            if (!st.getInfo().equals("")) {
+                g.setNumPlayers();
+            }
+        }
+
+        int frog = s.findObserverPosition(observer);
+        Main f = new Main(level,title, observer, frog);
         observer.setGameWindow(f);
+
         f.run();
     }
 }

@@ -23,7 +23,10 @@ public class ObserverImpl extends UnicastRemoteObject implements ObserverRI {
     @Override
     public void update() throws RemoteException{
         this.lastObserverState = subjectRI.getState();
-        gameWindow.froggerHandler(this.lastObserverState);
+        if ((this.lastObserverState.getInfo().compareTo("UpPressed") == 0) || (this.lastObserverState.getInfo().compareTo("DownPressed") == 0) || (this.lastObserverState.getInfo().compareTo("LeftPressed") == 0) || (this.lastObserverState.getInfo().compareTo("RightPressed") == 0))
+        {
+            gameWindow.froggerHandler(this.lastObserverState);
+        }
     }
 
     public State getLastObserverState(){

@@ -49,6 +49,15 @@ public class SubjectImpl extends UnicastRemoteObject implements SubjectRI {
         }
     }
 
+    public int findObserverPosition(ObserverRI obs) throws RemoteException{
+        for (int i = 0; i < observers.size(); i++){
+            if(obs.equals(observers.get(i))){
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public String getName() {
         return name;
     }
