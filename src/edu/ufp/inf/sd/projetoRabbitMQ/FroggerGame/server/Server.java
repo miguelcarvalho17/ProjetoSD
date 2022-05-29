@@ -2,6 +2,7 @@ package edu.ufp.inf.sd.projetoRabbitMQ.FroggerGame.server;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.*;
+import edu.ufp.inf.sd.projetoRabbitMQ.FroggerGame.client.Observer;
 import edu.ufp.inf.sd.rabbitmqservices.util.RabbitUtils;
 
 import java.io.IOException;
@@ -24,6 +25,9 @@ public class Server {
     private String messageFormat;
     //Store received message to be get by gui
     private String receivedMessage;
+
+    public ArrayList<Integer> frogs = new ArrayList<>();
+    public ArrayList<Observer> observers = new ArrayList<>();
 
     public Server(ObserverServer gui, String host, int port, String user, String pass, String exchangeName, BuiltinExchangeType exchangeType, String messageFormat) throws IOException, TimeoutException {
         this.gui = gui;
@@ -66,7 +70,7 @@ public class Server {
             /* TODO: Create binding: tell exchange to send messages to a queue; fanout exchange ignores the last parameter (binding key) */
 
             String routingKey = "";
-            channelToRabbitMq.queueBind(queueName, exchangeName + "Server", routingKey);
+            channelToRabbitMq.queueBind(queueName, exchangeName + "server", routingKey);
             channelToRabbitMq.queuePurge(queueName);
 
             Logger.getLogger(this.getClass().getName()).log(Level.INFO, " Created consumerChannel bound to Exchange " + this.exchangeName + "...");
@@ -125,11 +129,16 @@ public class Server {
     public void setReceivedMessage(String receivedMessage) throws IOException {
         String[] string = receivedMessage.split(":");
 
-        if (string[1].equals("Down Pressed") || string[1].equals("Up Pressed") || string[1].equals("Right Pressed") || string[1].equals("Left Pressed")) {
+        if (string[1].equals("Novo Jogador")) {
+            this.frogs.add(Integer.parseInt(string[0]));
+            System.out.println(this.frogs.size());
+            this.sendMessage(this.frogs + ":Frogs");
+        }
+
+        if (string[1].equals("DownPressed") ||  string[1].equals("UpPressed") || string[1].equals("RightPressed") || string[1].equals("LeftPressed")) {
             this.sendMessage(receivedMessage);
         }
         this.receivedMessage = receivedMessage;
-
     }
 
 }

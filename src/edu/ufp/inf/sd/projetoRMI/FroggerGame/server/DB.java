@@ -72,7 +72,7 @@ public class DB {
     public Game insert(String title, String dif) throws RemoteException {
         SubjectRI subject = new SubjectImpl(title);
         Game g = new Game(title, dif, subject);
-        g.setNumPlayers();
+        //g.setNumPlayers();
         froggerGames.add(g);
         subjectsRI.add(subject);
 

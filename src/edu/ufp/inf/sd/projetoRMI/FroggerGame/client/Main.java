@@ -45,8 +45,8 @@ public class Main extends StaticScreenGame {
 	static final int WORLD_HEIGHT = (14*32);
 	static final Vector2D FROGGER_START = new Vector2D(4*32,WORLD_HEIGHT-32);
 	static final Vector2D FROGGER2_START = new Vector2D(8*32,WORLD_HEIGHT-32);
-	
-	static final String RSC_PATH = "edu/ufp/inf/sd/projetoRMI/FroggerGame/resources/";
+
+	static final String RSC_PATH = "edu/ufp/inf/sd/projetoRabbitMQ/FroggerGame/frogger/resources/";
 	static final String SPRITE_SHEET = RSC_PATH + "frogger_sprites.png";
 	
     static final int FROGGER_LIVES      = 5;
@@ -406,7 +406,7 @@ public class Main extends StaticScreenGame {
 	 */
 	public void finishLevelKeyboardHandler() {
 		keyboard.poll();
-		if (keyboard.isPressed(KeyEvent.VK_SPACE)) {
+		if (keyboard.isPressed(KeyEvent.VK_SPACE) || space_has_been_released) {
 			GameState = GAME_PLAY;
 			audiofx.playGameMusic();
 			initializeLevel(++GameLevel);

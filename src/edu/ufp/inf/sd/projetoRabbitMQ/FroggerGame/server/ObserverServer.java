@@ -54,7 +54,8 @@ public class ObserverServer {
      */
     private void sendMsg(String user, String msgToSend) {
         try {
-            msgToSend = "[" + user + "]: " + msgToSend;
+            msgToSend = user + ":" + msgToSend;
+            System.out.println(msgToSend);
             this.server.sendMessage(msgToSend);
         } catch (IOException ex) {
             Logger.getLogger(ObserverServer.class.getName()).log(Level.SEVERE, null, ex);

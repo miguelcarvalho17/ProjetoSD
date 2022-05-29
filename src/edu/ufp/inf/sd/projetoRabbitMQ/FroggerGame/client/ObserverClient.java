@@ -14,12 +14,14 @@ public class ObserverClient extends javax.swing.JFrame{
 
     private Observer observer;
 
+    public Main main;
+
     /**
      * Creates new form ChatClientFrame
      *
      * @param args
      */
-    public ObserverClient(String args[]) {
+    public ObserverClient(String args[]) throws IOException, TimeoutException {
         RabbitUtils.printArgs(args);
 
         //Read args passed via shell command
@@ -30,6 +32,7 @@ public class ObserverClient extends javax.swing.JFrame{
         int level = Integer.parseInt(args[4]);
         String title = args[5];
         //String general=args[5];
+        /*
         Thread thread = new Thread(){
             public void run(){
                 Main f = null;
@@ -45,28 +48,51 @@ public class ObserverClient extends javax.swing.JFrame{
                     e.printStackTrace();
                 }
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, " After initObserver()...");
-                f.setObserver(observer);
 
+                while(observer.frogs.size() < 2){
+                    //System.out.println("Waiting for opponent!");
+                }
+                f.setObserver(observer);
                 f.run();
             }
         };
         thread.start();
+         */
+         this.observer = new Observer(this, host, port, "guest", "guest",player, exchangeName, BuiltinExchangeType.FANOUT, "UTF-8");
+         Logger.getLogger(this.getClass().getName()).log(Level.INFO, " After initObserver()...");
+
+         while(observer.frogs.size() < 2){
+             System.out.println(observer.frogs.size());
+         }
+         this.main = new Main(level, title, player, this.observer);
+         main.run();
+    }
+
+
+
+    /**
+     * Sends msg through the _05_observer to the exchange where all observers are binded
+     *
+     * @param msgToSend
+     */
+    private void sendMsg(String user, String msgToSend) {
+        try {
+            msgToSend = user +":" + msgToSend;
+            System.out.println(msgToSend);
+            this.observer.sendMessage(msgToSend);
+        } catch (IOException ex) {
+            Logger.getLogger(ObserverClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                int expectedArgs = 4;
-                if (args.length >= expectedArgs) {
-                    new ObserverClient(args).setVisible(true);
-                } else {
-                    Logger.getLogger(ObserverClient.class.getName()).log(Level.INFO, "check args.length < "+expectedArgs+"!!!" );
-                }
-            }
-        });
+    public static void main(String args[]) throws IOException, TimeoutException {
+       new ObserverClient(args);
+    }
+
+    public Main getMain() {
+        return main;
     }
 }

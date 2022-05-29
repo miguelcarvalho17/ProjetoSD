@@ -195,12 +195,12 @@ public class FroggerClient {
         }
 
         ObserverRI obs = new ObserverImpl(username, subject);
+        g = gameSessionRI.joinGame(g.getName());
+        State s = new State("", g.getNumPlayers()+"");
+        obs.getSubjectRI().setState(s);
 
-        while(g.getNumPlayers() < 2) {
-            State st = obs.getSubjectRI().getState();
-            if (!st.getInfo().equals("")){
-                g.setNumPlayers();
-            }
+       while(!obs.getSubjectRI().getState().getInfo().equals("2")) {
+           System.out.println(obs.getSubjectRI().getState().getInfo());
         }
         int frog = subject.findObserverPosition(obs);
         System.out.println(frog);
@@ -243,13 +243,12 @@ public class FroggerClient {
         SubjectRI s = gameSessionRI.getSubject(title);
         ObserverRI observer = new ObserverImpl(username, s);
 
-        State state = new State(observer.getId(), "Novo Jogador");
-        observer.getSubjectRI().setState(state);
-        while(g.getNumPlayers() < 2) {
-            State st = observer.getSubjectRI().getState();
-            if (!st.getInfo().equals("")) {
-                g.setNumPlayers();
-            }
+        g = gameSessionRI.joinGame(g.getName());
+        State s1 = new State("", g.getNumPlayers()+"");
+        observer.getSubjectRI().setState(s1);
+
+        while(!observer.getSubjectRI().getState().getInfo().equals("2")) {
+            System.out.println(observer.getSubjectRI().getState().getInfo());
         }
 
         int frog = s.findObserverPosition(observer);

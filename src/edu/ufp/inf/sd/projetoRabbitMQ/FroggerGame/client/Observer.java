@@ -2,10 +2,10 @@ package edu.ufp.inf.sd.projetoRabbitMQ.FroggerGame.client;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.*;
-import edu.ufp.inf.sd.projetoRabbitMQ.FroggerGame.frogger.Main;
 import edu.ufp.inf.sd.rabbitmqservices.util.RabbitUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 public class Observer {
 
     //Reference for gui
-    private final Main gui;
+    private final ObserverClient gui;
 
     //Preferences for exchange...
     private final Channel channelToRabbitMq;
@@ -28,12 +28,15 @@ public class Observer {
     //Store received message to be get by gui
     private String receivedMessage;
 
-    private final int ID;
+    private int id;
+    private int idJogo;
+
+    public ArrayList<Integer> frogs = new ArrayList<>();
 
     /**
      * @param gui
      */
-    public Observer(Main gui, String host, int port, String user, String pass,int player, String exchangeName, BuiltinExchangeType exchangeType, String messageFormat) throws IOException, TimeoutException {
+    public Observer(ObserverClient gui, String host, int port, String user, String pass,int player, String exchangeName, BuiltinExchangeType exchangeType, String messageFormat) throws IOException, TimeoutException {
         this.gui=gui;
         System.out.println(exchangeName);
         Logger.getLogger(this.getClass().getName()).log(Level.INFO, " going to attach observer to host: " + host + "...");
@@ -46,14 +49,15 @@ public class Observer {
         //String[] bindingKeys={"",""};
         //this.exchangeBindingKeys=bindingKeys;
         this.messageFormat=messageFormat;
-        this.ID = player;
 
         bindExchangeToChannelRabbitMQ();
         attachConsumerToChannelExchangeWithKey();
+        this.id = player;
+        this.sendMessage(id+":Novo Jogador");
     }
 
     public int getID() {
-        return ID;
+        return id;
     }
 
     /**
@@ -63,7 +67,7 @@ public class Observer {
         Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Declaring Exchange '" + this.exchangeName + "' with type " + this.exchangeType);
 
         /* TODO: Declare exchange type  */
-        this.channelToRabbitMq.exchangeDeclare(exchangeName, BuiltinExchangeType.FANOUT);
+        this.channelToRabbitMq.exchangeDeclare(exchangeName+"client", BuiltinExchangeType.FANOUT);
     }
 
     /**
@@ -78,7 +82,7 @@ public class Observer {
 
             /* TODO: Create binding: tell exchange to send messages to a queue; fanout exchange ignores the last parameter (binding key) */
             String routingKey = "";
-            this.channelToRabbitMq.queueBind(queueName, exchangeName, routingKey);
+            this.channelToRabbitMq.queueBind(queueName, exchangeName+"client", routingKey);
 
             Logger.getLogger(this.getClass().getName()).log(Level.INFO, " Created consumerChannel bound to Exchange " + this.exchangeName + "...");
 
@@ -93,7 +97,7 @@ public class Observer {
                 System.out.println(" [x] Consumer Tag [" + consumerTag + "] - Received '" + message + "'");
 
                 // TODO: Notify the GUI about the new message arrive
-                this.gui.froggerHandler(message);
+                //this.gui.froggerHandler(message);
 
             };
             CancelCallback cancelCallback=consumerTag -> {
@@ -119,10 +123,8 @@ public class Observer {
         String routingKey="";
         BasicProperties prop = MessageProperties.PERSISTENT_TEXT_PLAIN;
 
-        //System.out.println(msgToSend);
-
         // TODO: Publish message
-        this.channelToRabbitMq.basicPublish(exchangeName, routingKey, null, msgToSend.getBytes("UTF-8"));
+        this.channelToRabbitMq.basicPublish(exchangeName+"server", routingKey, null, msgToSend.getBytes("UTF-8"));
     }
 
     /**
@@ -136,7 +138,33 @@ public class Observer {
      * @param receivedMessage the received message to set
      */
     public void setReceivedMessage(String receivedMessage) {
-        this.receivedMessage=receivedMessage;
+        System.out.println(receivedMessage);
+        System.out.println(this.frogs.size());
+        String[] string = receivedMessage.split(":");
+
+        if (string[1].equals("Frogs")) {
+            //System.out.println(string[0]);
+            string[0] = string[0].replace("[", " ");
+            string[0] = string[0].replace("]", " ");
+            string[0] = string[0].trim();
+            String[] j = string[0].split(", ");
+            for (String s : j) {
+                if (!this.frogs.contains(Integer.parseInt(s)))
+                    this.frogs.add(Integer.parseInt(s));
+
+            }
+            System.out.println(frogs);
+        }else{
+            System.out.println("Movimento a ser tratado :D");
+            this.gui.getMain().froggerHandler(string[0] +":"+string[1]);
+        }
+        /*(string[1].equals("DownPressed") || string[1].equals("UpPressed") || string[1].equals("RightPressed") || string[1].equals("LeftPressed")) {
+            System.out.println("Movimento a ser tratado :D");
+            this.gui.getMain().froggerHandler(this.getID() +":"+string[1]);
+
+         */
+        this.receivedMessage = receivedMessage;
+        }
+        //System.out.println();
     }
-}
 

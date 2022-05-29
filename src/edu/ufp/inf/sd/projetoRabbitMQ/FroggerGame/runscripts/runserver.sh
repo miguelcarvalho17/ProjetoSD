@@ -7,16 +7,12 @@
 #@REM Script usage: runsetup <role> (where role should be: server / client)
 source ./setenv.sh server
 
-export WORD_1=$1
-export WORD_2=$2
-export WORD_3=$3
-
 echo ${ABSPATH2CLASSES}
 cd ${ABSPATH2CLASSES}
 #clear
 #pwd
 java -cp ${CLASSPATH} \
-     ${JAVAPACKAGEROLEPATH}.${OBSERVER_SERVER_CLASS_PREFIX} ${BROKER_HOST} ${BROKER_PORT} ${BROKER_EXCHANGE} ${WORD_1} ${WORD_2} ${WORD_3}
+     ${JAVAPACKAGEROLEPATH}.${OBSERVER_SERVER_CLASS_PREFIX} ${BROKER_HOST} ${BROKER_PORT} ${BROKER_EXCHANGE}
 
 
 cd ${ABSPATH2SRC}/${JAVASCRIPTSPATH}
